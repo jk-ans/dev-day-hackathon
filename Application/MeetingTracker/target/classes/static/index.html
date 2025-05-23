@@ -234,17 +234,30 @@
             document.getElementById('meetingsSection').classList.add('d-none');
             document.getElementById('meetingCostPage').classList.remove('d-none');
             let attendeeRows = '';
-            let total = 0;
+            let totalHourly = 0;
+            let totalMeetingCost = 0;
+            // Calculate duration in minutes
+            let duration = 0;
+            if (meeting.startTime && meeting.endTime) {
+                try {
+                    const start = new Date(meeting.startTime);
+                    const end = new Date(meeting.endTime);
+                    duration = (end - start) / 60000;
+                } catch { duration = 0; }
+            }
             meeting.attendees.forEach(a => {
-                const cost = roleCosts[a.role] || 0;
-                total += cost;
-                attendeeRows += `<tr><td>${a.name}</td><td>${a.role}</td><td>£${cost}</td></tr>`;
+                const hourly = roleCosts[a.role] || 0;
+                totalHourly += hourly;
+                // Calculate cost for this attendee for the meeting
+                const attendeeCost = duration > 0 ? (hourly * duration / 60) : 0;
+                totalMeetingCost += attendeeCost;
+                attendeeRows += `<tr><td>${a.name}</td><td>${a.role}</td><td>£${hourly}</td><td>${duration > 0 ? duration + ' min' : '-'}</td><td>£${attendeeCost.toFixed(2)}</td></tr>`;
             });
             document.getElementById('costSummary').innerHTML = `
                 <table class="table table-bordered">
-                    <thead><tr><th>Name</th><th>Role</th><th>Hourly Rate</th></tr></thead>
+                    <thead><tr><th>Name</th><th>Role</th><th>Hourly Rate</th><th>Duration</th><th>Cost for Meeting</th></tr></thead>
                     <tbody>${attendeeRows}</tbody>
-                    <tfoot><tr><th colspan="2">Total Hourly Cost</th><th>£${total}</th></tr></tfoot>
+                    <tfoot><tr><th colspan="4">Total Meeting Cost</th><th>£${totalMeetingCost.toFixed(2)}</th></tr></tfoot>
                 </table>
             `;
         }
