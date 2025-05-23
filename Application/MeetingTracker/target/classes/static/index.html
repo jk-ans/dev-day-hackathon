@@ -42,8 +42,13 @@
                     </label>
                 </div>
                 <div class="col-md-4">
-                    <label class="form-label">Duration (minutes)
-                        <input type="number" id="duration" class="form-control" min="1" required />
+                    <label class="form-label">Start Time
+                        <input type="datetime-local" id="startTime" class="form-control" required />
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">End Time
+                        <input type="datetime-local" id="endTime" class="form-control" required />
                     </label>
                 </div>
                 <div class="col-md-4">
@@ -179,15 +184,29 @@
                 div.className = 'meeting meeting-summary fade-in mb-3';
                 let attendeesHtml = '';
                 if (m.attendees && m.attendees.length > 0) {
-                    attendeesHtml = '<ul class="mb-1">' + m.attendees.map((a, idx) => `<li><a href="#" onclick='showFeedbackPage({name: ${JSON.stringify(a.name)}, role: ${JSON.stringify(a.role)}}, ${JSON.stringify(m.name)});return false;'>${a.name}</a> <span class='badge bg-secondary'>${a.role}</span></li>`).join('') + '</ul>';
+                    attendeesHtml = '<ul class="mb-1">' + m.attendees.map((a, idx) => `<li><a href=\"#\" onclick='showFeedbackPage({name: ${JSON.stringify(a.name)}, role: ${JSON.stringify(a.role)}}, ${JSON.stringify(m.name)});return false;'>${a.name}</a> <span class='badge bg-secondary'>${a.role}</span></li>`).join('') + '</ul>';
                 } else {
                     attendeesHtml = '<em>No attendees</em>';
+                }
+                // Calculate duration in minutes if possible
+                let duration = '';
+                if (m.startTime && m.endTime) {
+                    try {
+                        const start = new Date(m.startTime);
+                        const end = new Date(m.endTime);
+                        const diff = (end - start) / 60000;
+                        duration = diff > 0 ? diff + ' min' : '<em>Invalid</em>';
+                    } catch { duration = '<em>Invalid</em>'; }
+                } else {
+                    duration = '<em>Not set</em>';
                 }
                 div.innerHTML = `<div class='fw-bold fs-5 text-primary mb-1'>${m.name}</div>
                     <div><strong>Goal:</strong> ${m.goal}</div>
                     <div><strong>Date:</strong> ${m.date ? m.date : '<em>Not set</em>'}</div>
                     <div><strong>Location:</strong> ${m.location ? m.location : '<em>Not set</em>'}</div>
-                    <div><strong>Duration:</strong> ${m.duration} min</div>
+                    <div><strong>Start Time:</strong> ${m.startTime ? m.startTime.replace('T', ' ') : '<em>Not set</em>'}</div>
+                    <div><strong>End Time:</strong> ${m.endTime ? m.endTime.replace('T', ' ') : '<em>Not set</em>'}</div>
+                    <div><strong>Duration:</strong> ${duration}</div>
                     <div><strong>Description:</strong> ${m.description}</div>
                     <div><strong>Attendees:</strong> ${attendeesHtml}</div>`;
                 list.appendChild(div);
@@ -244,7 +263,8 @@
             const meeting = {
                 name: document.getElementById('name').value,
                 goal: document.getElementById('goal').value,
-                duration: parseInt(document.getElementById('duration').value),
+                startTime: document.getElementById('startTime').value,
+                endTime: document.getElementById('endTime').value,
                 date: document.getElementById('date').value,
                 location: document.getElementById('location').value,
                 description: document.getElementById('description').value,

@@ -5,16 +5,18 @@ import java.util.List;
 public class Meeting {
     private String name;
     private String goal;
-    private int duration; // Duration in minutes
+    private String startTime; // e.g. 2025-05-23T14:00
+    private String endTime;   // e.g. 2025-05-23T15:00
     private String description;
     private List<Attendee> attendees;
 
     public Meeting() {}
 
-    public Meeting(String name, String goal, int duration, String description, List<Attendee> attendees) {
+    public Meeting(String name, String goal, String startTime, String endTime, String description, List<Attendee> attendees) {
         this.name = name;
         this.goal = goal;
-        this.duration = duration;
+        this.startTime = startTime;
+        this.endTime = endTime;
         this.description = description;
         this.attendees = attendees;
     }
@@ -35,12 +37,31 @@ public class Meeting {
         this.goal = goal;
     }
 
-    public int getDuration() {
-        return duration;
+    public String getStartTime() {
+        return startTime;
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public String getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public long getDurationMinutes() {
+        if (startTime == null || endTime == null) return 0;
+        try {
+            java.time.LocalDateTime start = java.time.LocalDateTime.parse(startTime);
+            java.time.LocalDateTime end = java.time.LocalDateTime.parse(endTime);
+            return java.time.Duration.between(start, end).toMinutes();
+        } catch (Exception e) {
+            return 0;
+        }
     }
 
     public String getDescription() {
@@ -64,7 +85,9 @@ public class Meeting {
         return "Meeting{" +
                 "name='" + name + '\'' +
                 ", goal='" + goal + '\'' +
-                ", duration=" + duration +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                ", duration=" + getDurationMinutes() +
                 ", description='" + description + '\'' +
                 ", attendees=" + attendees +
                 '}';
