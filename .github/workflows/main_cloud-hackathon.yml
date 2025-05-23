@@ -22,7 +22,9 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'microsoft'      - name: Build with Maven
+          distribution: 'microsoft'
+
+      - name: Build with Maven
         run: |
           cd Application/MeetingTracker
           mvn clean install
@@ -63,4 +65,3 @@ jobs:
           app-name: 'cloud-hackathon'
           slot-name: 'Production'
           package: '*.jar'
-          
