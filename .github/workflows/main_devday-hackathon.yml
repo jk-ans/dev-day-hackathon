@@ -49,6 +49,10 @@ jobs:
         with:
           name: java-app
       
+      - name: Rename JAR file to app.jar
+        run: |
+          mv *.jar app.jar
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -62,5 +66,4 @@ jobs:
         with:
           app-name: 'DevDay-Hackathon'
           slot-name: 'Production'
-          package: '*.jar'
-          
+          package: 'app.jar'
