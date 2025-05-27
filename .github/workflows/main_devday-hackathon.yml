@@ -62,5 +62,5 @@ jobs:
         with:
           app-name: 'DevDay-Hackathon'
           slot-name: 'Production'
-          package: '*.war'
+          package: '*.jar'
           
